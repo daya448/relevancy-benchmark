@@ -1,0 +1,15 @@
+##Client Connection
+es_host=https://ocbc-vectorsearch-benchmarks.es.australia-southeast1.gcp.elastic-cloud.com
+es_port=9243
+api_token=eVVWdTNaQUJGdHR3Mnd6T2NTWVo6aERqT29BemFTRy1YZmdQTU85VmlTQQ==
+index_name=enwiki_rank
+
+##Generate Rank Eval Request
+ratings_file=discernatron_ratings.tsv
+
+## Run Benchmarks
+query_type=vector_query
+# query_type=hybrid_query or elser_query
+k=10
+relevant_rating_threshold=2
+benchmark_output_file=benchmark_output.csv
