@@ -18,91 +18,6 @@ benchmark_output_file = config['benchmark_output_file']
 with open('rank_eval_request.json') as f:
     judgement_list = json.load(f)
 
-
-# Define the inline templates for vector, hybrid, and elser queries
-vector_query_template = {
-    "id": "templated_query",
-    "template": {
-        "inline": {
-            "query": {
-                "match": {
-                    "title": "{{query_string}}"
-                }
-            }
-
-        }
-    }
-}
-
-# vector_query_template = {
-#     "id": "vector_query",
-#     "template": {
-#         "inline": {
-#             "query": {
-#                 "knn": {
-#                     "field": "{{field}}",
-#                     "query_vector": "{{query_vector}}",
-#                     "k": "{{k}}",
-#                     "num_candidates": "{{num_candidates}}"
-#                 }
-#             }
-#         }
-#     }
-# }
-
-hybrid_query_template = {
-    "id": "templated_query",
-    "template": {
-        "inline": {
-            "query": {
-                "bool": {
-                    "should": [
-                        {
-                            "knn": {
-                                "field": "{{field}}",
-                                "query_vector": "{{query_vector}}",
-                                "k": "{{k}}",
-                                "num_candidates": "{{num_candidates}}"
-                            }
-                        },
-                        {
-                            "match": {
-                                "text": "{{bm25_query}}"
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-elser_query_template = {
-    "id": "templated_query",
-    "template": {
-        "inline": {
-            "query": {
-                "knn": {
-                    "field": "{{field}}",
-                    "query_vector": "{{query_vector}}",
-                    "k": "{{k}}",
-                    "num_candidates": "{{num_candidates}}"
-                }
-            }
-        }
-    }
-}
-
-# Select the query template based on the configuration
-if config['query_type'] == 'vector_query':
-    selected_query_template = vector_query_template
-elif config['query_type'] == 'hybrid_query':
-    selected_query_template = hybrid_query_template
-elif config['query_type'] == 'elser_query':
-    selected_query_template = elser_query_template
-else:
-    raise ValueError("Invalid query type specified in the configuration file.")
-
 # Prepare to write results to CSV
 with open(benchmark_output_file, 'w', newline='') as csvfile:
     fieldnames = ['query_id', 'recall', 'query_type']
@@ -121,8 +36,8 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
                     "k": k,
                     "relevant_rating_threshold": relevant_rating_threshold,
                 }
-            },
-            "templates": [selected_query_template]
+            }
+            
         }
         print(rank_eval_request)
         try:

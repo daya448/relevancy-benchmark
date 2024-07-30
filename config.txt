@@ -1,15 +1,18 @@
 ##Client Connection
+es_host=https://ocbc-benchmark.es.australia-southeast1.gcp.elastic-cloud.com/
 es_host=https://ocbc-vectorsearch-benchmarks.es.australia-southeast1.gcp.elastic-cloud.com
 es_port=9243
 api_token=eVVWdTNaQUJGdHR3Mnd6T2NTWVo6aERqT29BemFTRy1YZmdQTU85VmlTQQ==
-index_name=enwiki_rank
+#api_token=MnZxSl9KQUI1M1RHUmRSamNmZng6RVdqZXFRd1JRSnlFeG5ldUxWLWNjUQ==
+index_name=vdb910-msmarco-v2
 
 ##Generate Rank Eval Request
-ratings_file=discernatron_ratings.tsv
-
+ratings_file=qrels.tsv
+input_file=qrels.tsv
+output_file=new_qrels.tsv
 ## Run Benchmarks
 query_type=vector_query
-# query_type=hybrid_query or elser_query
+# query_type=hybrid_query or elser_query or base_query or vector_query
 k=10
 relevant_rating_threshold=2
 benchmark_output_file=benchmark_output.csv
