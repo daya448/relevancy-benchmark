@@ -40,7 +40,7 @@ config = read_config('config.txt')
 query_type=config['query_type']
 
 # Load the queries
-queries = load_json_objects('queries.json')
+queries = load_json_objects('queries-recall.json')
 
 # Load the qrels from the qrels.tsv file
 qrels = {}

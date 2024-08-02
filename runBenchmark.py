@@ -15,7 +15,7 @@ benchmark_output_file = config['benchmark_output_file']
 
 
 # Load the judgement list
-with open('rank_eval_request.json') as f:
+with open('rank_eval_requests.json') as f:
     judgement_list = json.load(f)
 
 # Prepare to write results to CSV
@@ -48,8 +48,9 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
             # Extract results and write to CSV
             for result in response['details']:
                 recall = response['details'][result]['metric_score']
+                recall_rounded = round(recall, 2)
                 writer.writerow(
-                    {'query_id': request_id, 'recall': recall, 'query_type': config['query_type']})
+                    {'query_id': request_id, 'recall': recall_rounded, 'query_type': config['query_type']})
 
             print(
                 f"Rank evaluation results for request {request_id} saved to {benchmark_output_file}.")

@@ -6,22 +6,41 @@ For further on the API are available in the [documentation](https://www.elastic.
 
 ## Data Used
 
-This demo is based on a small subset of documents from the [English Wikipedia dump](https://dumps.wikimedia.org)
-which is also available in an [Elasticsearch bulk format](https://dumps.wikimedia.org/other/cirrussearch/).
-The relevance judgement data used for the evaluation is based on data collected in the Wikimedia labs [Discernatron Project](https://discernatron.wmflabs.org/login)
-and is available for registered Wikimedia users for [download](https://discernatron.wmflabs.org/scores/all) separately. 
+This track benchmarks the dataset from [Cohere/msmarco-v2-embed-english-v3](https://huggingface.co/datasets/Cohere/msmarco-v2-embed-english-v3).
+
+Given the size of this dataset 138.3M documents with 1024 dimension vectors you
+need a cluster with at least 60GB of total RAM available to run performant HNSW queries.
+The corpus contains the original 138M passages of the [MSMARCO (passage, version 2)](https://ir-datasets.com/msmarco-passage-v2.html) corpus embedded
+into 1024 dimensional vectors with the [Cohere `embed-english-v3.0` model](https://cohere.com/blog/introducing-embed-v3).
+
+## Relevance Ratings
+For the relevance metrics, the `qrels.tsv` file contains annotations for all the queries listed in `queries.json`. This file is generated from the original training data available at [ir_datasets/msmarco_passage_v2](https://ir-datasets.com/msmarco-passage-v2.html#msmarco-passage-v2/train).
 
 
-#Commands to use
-#To generate rank_eval_request with all the labelled answers.
+
+
+# Commands to use
+To generate rank_eval_request with all the labelled answers.This should generate a file "rank_eval_requests.json"
 
 ```
-python3 generateRankEvalRequest.py "Mary I Fergusson" "llajic" "JFK" "highliting text and calculations in word documents" "Picture resolution ppp" "homosexuality in the united states" "the great beer flood" "semper fight" "united broadband" "hydrostone halifax nova scotia" "antibacterial hand rub" "corona rhythm of the night" "dont cry guns n roses" "compare roads built Marcos and Aquino" "saab episodes" "who played the older dotti hilton in the movies in the movie a leage of their own" "298005 b.c." "mercedes truck w673" "ramoones" "red room tor sites" "ride bicycles" "german revolution" "latin dative" "Information Asymmetries" "SANTA CLAUS PRINT OUT 3D PAPERTOYS" "phasers on stun" "fort worth film" "Quiz Magic Academy" "naval flags" "tayps of wlding difats" "controls" "Adam Rapp"
+python3 generate_rank_eval_requests.py
 ```
 
-#To run the benchmark query.It produces output in benchmark_output.csv.
+Run the benchmark query.This should generate a output file "benchmark_output.csv"
 
 ```
 python3 runBenchmark.py
 ```
 
+## Notes for Running Benchmarks
+
+- Queries used for benchmarking are read using search_queries.py
+- For the elser_query to work, field name "text_elser" should be generated using the field "text"
+
+
+## Output Summary
+
+| query_id 	| base_query 	| vector_query 	| hybrid_query 	| elser_query 	|
+|---	|---	|---	|---	|---	|
+| 2000511 	| 0.12 	| 0.18 	| 0.18 	| - 	|
+| 2000512 	| 0.00 	| 0.00 	| 0.00 	| - 	|

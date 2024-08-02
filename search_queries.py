@@ -31,22 +31,20 @@ def get_search_query(query_type, query_vector=None, query_string=None):
     elif query_type == "hybrid_query":
         return {
             "query": {
-                "bool": {
-                    "should": [
-                        {
-                            "knn": {
-                                "field": "emb",  # Use the passed field name
-                                "query_vector": query_vector,
-                                "k": 100,
-                                "num_candidates": 1000
-                            }
-                        },
-                        {
-                            "match": {
-                                "text": query_string
-                            }
-                        }
-                    ]
+                "match": {
+                    "text": query_string
+                }
+            },
+            "knn": {
+                "field": "emb",
+                "query_vector": query_vector,
+                "k": 10,
+                "num_candidates": 100
+            },
+            "rank": {
+                "rrf": {
+                    "window_size": 10,
+                    "rank_constant": 5
                 }
             }
         }

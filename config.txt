@@ -1,10 +1,8 @@
 ##Client Connection
-es_host=https://ocbc-benchmark.es.australia-southeast1.gcp.elastic-cloud.com/
-es_host=https://ocbc-vectorsearch-benchmarks.es.australia-southeast1.gcp.elastic-cloud.com
+es_host=https://ocbc-test.es.australia-southeast1.gcp.elastic-cloud.com
 es_port=9243
-api_token=eVVWdTNaQUJGdHR3Mnd6T2NTWVo6aERqT29BemFTRy1YZmdQTU85VmlTQQ==
-#api_token=MnZxSl9KQUI1M1RHUmRSamNmZng6RVdqZXFRd1JRSnlFeG5ldUxWLWNjUQ==
-index_name=vdb910-msmarco-v2
+api_token=NGgxREI1RUI1c0JodXp4WEt3cHY6bTZRcndzVTZRVVNKM0g1QnJsakVBdw==
+index_name=vdb910-msmarco-v2-relevance
 
 ##Generate Rank Eval Request
 ratings_file=qrels.tsv
