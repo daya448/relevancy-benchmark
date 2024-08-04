@@ -32,7 +32,13 @@ Run the benchmark query.This should generate a output file "benchmark_output.csv
 python3 runBenchmark.py
 ```
 
-## Notes for Running Benchmarks
+The above 2 scipts can be invoked by running single python file "run_customer_benchmark.py"
+
+```
+python3 run_customer_benchmark.py
+```
+
+## Additional Notes
 
 - Queries used for benchmarking are read using search_queries.py
 - For the elser_query to work, field name "text_elser" should be generated using the field "text"
@@ -43,4 +49,4 @@ python3 runBenchmark.py
 | query_id 	| base_query 	| vector_query 	| hybrid_query 	| elser_query 	|
 |---	|---	|---	|---	|---	|
 | 2000511 	| 0.12 	| 0.18 	| 0.18 	| - 	|
-| 2000512 	| 0.00 	| 0.00 	| 0.00 	| - 	|
+| 2056158 	| 0.01 	| 0.05 	| 0.028 	| - 	|

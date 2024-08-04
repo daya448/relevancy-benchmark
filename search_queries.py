@@ -1,16 +1,22 @@
-# search_queries.py
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_search_query(query_type, query_vector=None, query_string=None):
+    logging.debug(f"Generating search query for type: {query_type}")
+    
     if query_type == "base_query":
+        logging.debug(f"Query string: {query_string}")
         return {
             "query": {
                 "match": {
                     "text": query_string
                 }
             }
-
         }
-    elif query_type in ["vector_query"]:
+    elif query_type == "vector_query":
+        logging.debug(f"Query vector: {query_vector}")
         return {
             "knn": {
                 "field": "emb",  # Use the passed field name
@@ -19,7 +25,8 @@ def get_search_query(query_type, query_vector=None, query_string=None):
                 "num_candidates": 1000
             }
         }
-    elif query_type in ["elser_query"]:
+    elif query_type == "elser_query":
+        logging.debug(f"Query vector: {query_vector}")
         return {
             "knn": {
                 "field": "text_elser",  # Use the passed field name
@@ -29,6 +36,7 @@ def get_search_query(query_type, query_vector=None, query_string=None):
             }
         }
     elif query_type == "hybrid_query":
+        logging.debug(f"Query string: {query_string}, Query vector: {query_vector}")
         return {
             "query": {
                 "match": {
@@ -49,4 +57,5 @@ def get_search_query(query_type, query_vector=None, query_string=None):
             }
         }
     else:
+        logging.error(f"Invalid query type specified: {query_type}")
         raise ValueError("Invalid query type specified.")
