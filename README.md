@@ -6,7 +6,47 @@ For further on the API are available in the [documentation](https://www.elastic.
 
 ## Data Used
 
-This demo is based on a small subset of documents from the [English Wikipedia dump](https://dumps.wikimedia.org)
-which is also available in an [Elasticsearch bulk format](https://dumps.wikimedia.org/other/cirrussearch/).
-The relevance judgement data used for the evaluation is based on data collected in the Wikimedia labs [Discernatron Project](https://discernatron.wmflabs.org/login)
-and is available for registered Wikimedia users for [download](https://discernatron.wmflabs.org/scores/all) separately. 
+This track benchmarks the dataset from [Cohere/msmarco-v2-embed-english-v3](https://huggingface.co/datasets/Cohere/msmarco-v2-embed-english-v3).
+
+Given the size of this dataset 138.3M documents with 1024 dimension vectors you
+need a cluster with at least 60GB of total RAM available to run performant HNSW queries.
+The corpus contains the original 138M passages of the [MSMARCO (passage, version 2)](https://ir-datasets.com/msmarco-passage-v2.html) corpus embedded
+into 1024 dimensional vectors with the [Cohere `embed-english-v3.0` model](https://cohere.com/blog/introducing-embed-v3).
+
+## Relevance Ratings
+For the relevance metrics, the `qrels.tsv` file contains annotations for all the queries listed in `queries.json`. This file is generated from the original training data available at [ir_datasets/msmarco_passage_v2](https://ir-datasets.com/msmarco-passage-v2.html#msmarco-passage-v2/train).
+
+
+
+
+# Commands to use
+To generate rank_eval_request with all the labelled answers.This should generate a file "rank_eval_requests.json"
+
+```
+python3 generate_rank_eval_requests.py
+```
+
+Run the benchmark query.This should generate a output file "benchmark_output.csv"
+
+```
+python3 runBenchmark.py
+```
+
+The above 2 scipts can be invoked by running single python file "run_customer_benchmark.py"
+
+```
+python3 run_customer_benchmark.py
+```
+
+## Additional Notes
+
+- Queries used for benchmarking are read using search_queries.py
+- For the elser_query to work, field name "text_elser" should be generated using the field "text"
+
+
+## Output Summary
+
+| query_id 	| base_query 	| vector_query 	| hybrid_query 	| elser_query 	|
+|---	|---	|---	|---	|---	|
+| 2000511 	| 0.12 	| 0.18 	| 0.18 	| - 	|
+| 2056158 	| 0.01 	| 0.05 	| 0.028 	| - 	|
