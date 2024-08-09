@@ -1,5 +1,6 @@
-# Demo for using Elasticsearch Ranking Evaluation API
+# Measure the Recall
 
+## Rank Evaluation API in Elaticsearch
 The Ranking Evaluation API allows to evaluate the quality of ranked search results over a set of typical search queries. Given this set of queries and a list or manually rated documents, the `_rank_eval` endpoint calculates and returns typical information retrieval metric like Recall@K
 
 For further on the API are available in the [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-rank-eval.html)
@@ -19,7 +20,7 @@ For the relevance metrics, the `qrels.tsv` file contains annotations for all the
 
 
 
-# Commands to use
+## Commands to use
 To generate rank_eval_request with all the labelled answers.This should generate a file "rank_eval_requests.json"
 
 ```
