@@ -34,7 +34,7 @@ def get_search_query(query_type, query_vector=None, query_string=None):
                 "text_expansion": {
                     "text_emb": {
                         "model_id": ".elser_model_2_linux-x86_64",
-                        "model_text": {query_vector}
+                        "model_text": query_vector
                     }
                 }
             }
