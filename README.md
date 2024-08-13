@@ -21,7 +21,15 @@ For the relevance metrics, the `qrels.tsv` file contains annotations for all the
 
 
 ## Commands to use
-To generate rank_eval_request with all the labelled answers.This should generate a file "rank_eval_requests.json"
+
+For indexing additional data, containing the labelled answers, execute the below command. This expects the dataset should be available in the same folder as the script. Download from [google drive](https://drive.google.com/drive/folders/1-lUK_zJK-jnJqatX87vvm7JaA_VdDtlN) and place it in the same folder as script.
+
+```
+python3 index_additional_dataset.py
+```
+
+
+To generate rank_eval_requests with all the labelled answers, execute the below command. This should generate a file "rank_eval_requests.json"
 
 ```
 python3 generate_rank_eval_requests.py
@@ -33,16 +41,12 @@ Run the benchmark query.This should generate a output file "benchmark_output.csv
 python3 runBenchmark.py
 ```
 
-The above 2 scipts can be invoked by running single python file "run_customer_benchmark.py"
+The above 2 scipts can be invoked by running single python file "run_customer_benchmark.py". This generates rank_eval requests and produces the  benchmark_output.csv file.
 
 ```
 python3 run_customer_benchmark.py
 ```
 
-## Additional Notes
-
-- Queries used for benchmarking are read using search_queries.py
-- For the elser_query to work, field name "text_elser" should be generated using the field "text"
 
 
 ## Output Summary
@@ -51,3 +55,11 @@ python3 run_customer_benchmark.py
 |---	|---	|---	|---	|---	|
 | 2000511 	| 0.12 	| 0.18 	| 0.18 	| - 	|
 | 2056158 	| 0.01 	| 0.05 	| 0.028 	| - 	|
+
+
+
+## Additional Notes
+
+- Queries used for benchmarking are read using search_queries.py
+- For the elser_query to work, field name "text_elser" should be generated using the field "text"
+

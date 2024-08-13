@@ -1,4 +1,5 @@
 import json
+import gzip
 from es_client import get_elasticsearch_client, read_config, helpers
 
 # Elasticsearch connection details
@@ -8,8 +9,8 @@ config = read_config('config.txt')
 # Specify the index name
 index_name = config['index_name']
 
-# Load the merged JSON file
-with open("additional_dataset.json", 'r') as f:
+# Load the gzipped JSON file
+with gzip.open("additional_dataset.json.gz", 'rt', encoding='utf-8') as f:
     documents = json.load(f)
 
 # Prepare the documents for bulk indexing
@@ -25,3 +26,4 @@ actions = [
 helpers.bulk(es, actions)
 
 print(f"Indexed {len(documents)} documents into {index_name}")
+

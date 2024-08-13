@@ -8,7 +8,7 @@ index_name=vdb910-msmarco-v2-relevance
 ratings_file=qrels.tsv
 input_file=qrels.tsv
 ## Run Benchmarks
-query_types=base_query,vector_query,hybrid_query
+query_types=base_query,vector_query,hybrid_query,elser_query
 # query_type=hybrid_query or elser_query or base_query or vector_query
 k=10
 relevant_rating_threshold=2

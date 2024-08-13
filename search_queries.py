@@ -1,11 +1,13 @@
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 def get_search_query(query_type, query_vector=None, query_string=None):
     logging.debug(f"Generating search query for type: {query_type}")
-    
+
     if query_type == "base_query":
         logging.debug(f"Query string: {query_string}")
         return {
@@ -28,15 +30,18 @@ def get_search_query(query_type, query_vector=None, query_string=None):
     elif query_type == "elser_query":
         logging.debug(f"Query vector: {query_vector}")
         return {
-            "knn": {
-                "field": "text_elser",  # Use the passed field name
-                "query_vector": query_vector,
-                "k": 100,
-                "num_candidates": 1000
+            "query": {
+                "text_expansion": {
+                    "text_emb": {
+                        "model_id": ".elser_model_2_linux-x86_64",
+                        "model_text": {query_vector}
+                    }
+                }
             }
         }
     elif query_type == "hybrid_query":
-        logging.debug(f"Query string: {query_string}, Query vector: {query_vector}")
+        logging.debug(
+            f"Query string: {query_string}, Query vector: {query_vector}")
         return {
             "query": {
                 "match": {
