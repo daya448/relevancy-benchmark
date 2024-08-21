@@ -5,7 +5,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def get_search_query(query_type, query_vector=None, query_string=None):
+def get_search_query(query_type, query_vector=None, query_string=None, k=1):
     logging.debug(f"Generating search query for type: {query_type}")
 
     if query_type == "base_query":
@@ -23,8 +23,8 @@ def get_search_query(query_type, query_vector=None, query_string=None):
             "knn": {
                 "field": "emb",  # Use the passed field name
                 "query_vector": query_vector,
-                "k": 100,
-                "num_candidates": 1000
+                "k": k,
+                "num_candidates": k*10
             }
         }
     elif query_type == "elser_query":
@@ -44,20 +44,119 @@ def get_search_query(query_type, query_vector=None, query_string=None):
             f"Query string: {query_string}, Query vector: {query_vector}")
         return {
             "query": {
-                "match": {
-                    "text": query_string
-                }
+                "multi_match": {
+                    "query":  query_string,
+                    "fields": ["full_text.english"],
+                    "type": "most_fields"  
+                }          
             },
             "knn": {
                 "field": "emb",
                 "query_vector": query_vector,
-                "k": 10,
-                "num_candidates": 100
+                "k": k,
+                "num_candidates": k*10
             },
             "rank": {
                 "rrf": {
-                    "window_size": 10,
-                    "rank_constant": 5
+                    "window_size": k,
+                    "rank_constant": 60
+                }
+            }
+        }
+    elif query_type == "hybrid_query_linear":
+        logging.debug(
+            f"Query string: {query_string}, Query vector: {query_vector}")
+        return {
+            "query": {
+                "multi_match": {
+                    "query":  query_string,
+                    "fields": ["full_text.english"]  
+                }          
+            },
+            "knn": {
+                "field": "emb",
+                "boost": 25,
+                "query_vector": query_vector,
+                "k": k,
+                "num_candidates": k*10
+            }
+        }
+    elif query_type == "bm25_english_text":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "match": {
+                    "text.english": query_string
+                }
+            }
+        }
+    elif query_type == "bm25_english_text":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "match": {
+                    "text.english": query_string
+                }
+            }
+        }
+    elif query_type == "bm25_english_full_text":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "combined_fields": {
+                    "query": query_string,
+                    "fields": ["full_text.english"]
+                }
+            }
+        }
+    elif query_type == "bm25_english_text_title_plus_nostem":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "multi_match": {
+                    "query": query_string,
+                    "fields": ["full_text.english", "full_text.english_nostem"],
+                    "type": "best_fields"
+                }
+            }
+        }
+    elif query_type == "bm25_english_text_title_plus_nostem_cross":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "multi_match": {
+                    "query": query_string,
+                    "fields": ["full_text.english", "full_text.english_nostem"],
+                    "type": "cross_field"
+                }
+            }
+        }
+    elif query_type == "bm25_full_text_plus_nostem":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "bool": {
+                "must": [
+                    {
+                    "multi_match": {
+                        "query": query_string,
+                        "fields": [
+                        "full_text.english"
+                        ]
+                    }
+                    }
+                ], 
+                "should": [
+                    {
+                    "multi_match": {
+                        "query": query_string,
+                        "fields": [
+                        "full_text.english_nostem"
+                        ],
+                        "type": "cross_fields"
+                    }
+                    }
+                ]
                 }
             }
         }
