@@ -48,6 +48,7 @@ def read_config(filename):
 # Load the configuration
 config = read_config('config.txt')
 query_types = config.get('query_types', '').split(',')
+rating_threshold = int(config.get('relevant_rating_threshold'))
 
 # Load the queries
 queries = load_json_objects('queries-recall.json')
@@ -62,11 +63,13 @@ try:
             query_id, doc_id, rating = row[:3]
             if query_id not in qrels:
                 qrels[query_id] = []
-            qrels[query_id].append({
-                "_index": config['index_name'],
-                "_id": doc_id,
-                "rating": int(rating)
-            })
+            rating = int(rating)
+            if rating >= rating_threshold:
+                qrels[query_id].append({
+                    "_index": config['index_name'],
+                    "_id": doc_id,
+                    "rating": int(rating)
+                })
 except FileNotFoundError as e:
     logging.error(f"File not found: {config['ratings_file']}")
     logging.error(f"Error message: {e}")
@@ -77,12 +80,23 @@ rank_eval_requests = {
 
 for query_type in query_types:
     for query in queries:
+        ratings = qrels.get(query["query_id"], [])
+        k = max(1, len(ratings)*2)
         request = {
             "id": f"{query['query_id']}-{query_type}",  # Include query type in the ID
-            "request": get_search_query(query_type, query_vector=query.get('emb'), query_string=query.get('text')),
-            "ratings": qrels.get(query["query_id"], [])
+            "request": get_search_query(query_type, query_vector=query.get('emb'), query_string=query.get('text'), k=k),
+            "ratings": ratings
         }
-        rank_eval_requests["requests"].append(request)
+        rank_eval_request = {
+            "requests": [request],
+            "metric": {
+                "recall": {
+                    "k": k,
+                    "relevant_rating_threshold": rating_threshold,
+                }
+            }
+        }
+        rank_eval_requests["requests"].append(rank_eval_request)
 
 # Save the rank evaluation requests to a JSON file
 output_file = 'rank_eval_requests.json'
