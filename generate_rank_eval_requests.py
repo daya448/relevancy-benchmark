@@ -82,6 +82,7 @@ for query_type in query_types:
     for query in queries:
         ratings = qrels.get(query["query_id"], [])
         k = max(1, len(ratings)*2)
+        k = 100
         request = {
             "id": f"{query['query_id']}-{query_type}",  # Include query type in the ID
             "request": get_search_query(query_type, query_vector=query.get('emb'), query_string=query.get('text'), k=k),
@@ -90,9 +91,13 @@ for query_type in query_types:
         rank_eval_request = {
             "requests": [request],
             "metric": {
-                "recall": {
-                    "k": k,
-                    "relevant_rating_threshold": rating_threshold,
+                # "recall": {
+                #     "k": k,
+                #     "relevant_rating_threshold": rating_threshold,
+                # }
+                "dcg": {
+                "k": k,
+                "normalize": True
                 }
             }
         }

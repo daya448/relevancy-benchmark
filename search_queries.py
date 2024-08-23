@@ -6,6 +6,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 def get_search_query(query_type, query_vector=None, query_string=None, k=1):
+    k = 100
     logging.debug(f"Generating search query for type: {query_type}")
 
     if query_type == "base_query":
