@@ -54,22 +54,25 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
 
         try:
             # Perform rank evaluation
+            print(index_name)
             response = es.rank_eval(index=index_name, body=request, search_type="dfs_query_then_fetch")
+            # with open(str(i) + 'data.json', 'w') as file:
+            #     json.dump(response.body, file, indent=4)
             logging.debug(
                 f"Rank evaluation response for request_id {request_id}: {response}")
 
             # Extract results
-            if response and 'details' in response:
-                detail = response['details'].get(request_id, {})
-                recall = detail.get('metric_score', 0)
-                recall_rounded = round(recall, 2)
+            if response and 'metric_score' in response:
+                #detail = response['details'].get(request_id, {})
+                score = response.get('metric_score', 0)
+                score_rounded = round(score, 5)
 
                 # Store the recall score in the recall_scores dictionary
                 if query_id not in recall_scores:
                     recall_scores[query_id] = {
                         'rating_count': rating_count
                     }
-                recall_scores[query_id][query_type] = recall_rounded
+                recall_scores[query_id][query_type] = score_rounded
                 
             else:
                 logging.error(
