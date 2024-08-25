@@ -1,3 +1,2 @@
-query_id,base_bm25,vector_query,hybrid_query,bm25_title_text,rating_count
-1,0.52922,0.58681,0.74349,0.65607,637
-,0.52922,0.58681,0.74349,0.65607,
+base_bm25,vector_query,hybrid_query,bm25_title_text
+0.5292,0.5868,0.7435,0.6561

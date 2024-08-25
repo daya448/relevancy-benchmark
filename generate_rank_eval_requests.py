@@ -92,12 +92,8 @@ for query_type in query_types:
     rank_eval_request = {
         "requests": requests,
         "metric": {
-            # "recall": {
-            #     "k": k,
-            #     "relevant_rating_threshold": rating_threshold,
-            # }
             "dcg": {
-            "k": k,
+            "k": 10,
             "normalize": True
             }
         }
