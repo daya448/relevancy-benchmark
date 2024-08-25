@@ -5,15 +5,15 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def get_search_query(query_type, query_vector=None, query_string=None, k=1):
+def get_search_query(query_type, query_vector=None, query_string=None, k=100):
     logging.debug(f"Generating search query for type: {query_type}")
 
-    if query_type == "base_query":
+    if query_type == "base_bm25":
         logging.debug(f"Query string: {query_string}")
         return {
             "query": {
                 "match": {
-                    "text": query_string
+                    "txt": query_string
                 }
             }
         }
@@ -46,7 +46,7 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
             "query": {
                 "multi_match": {
                     "query":  query_string,
-                    "fields": ["full_text.english"],
+                    "fields": ["txt.english", "title.english"],
                     "type": "most_fields"  
                 }          
             },
@@ -58,7 +58,7 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
             },
             "rank": {
                 "rrf": {
-                    "window_size": k,
+                    "window_size": 100,
                     "rank_constant": 60
                 }
             }
@@ -86,7 +86,7 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
         return {
             "query": {
                 "match": {
-                    "text.english": query_string
+                    "txt.english": query_string
                 }
             }
         }
@@ -95,7 +95,7 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
         return {
             "query": {
                 "match": {
-                    "text.english": query_string
+                    "txt.english": query_string
                 }
             }
         }
@@ -115,7 +115,7 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
             "query": {
                 "multi_match": {
                     "query": query_string,
-                    "fields": ["full_text.english", "full_text.english_nostem"],
+                    "fields": ["txt.english", "txt.english_nostem","title.english", "title.english_nostem"],
                     "type": "best_fields"
                 }
             }
@@ -160,6 +160,21 @@ def get_search_query(query_type, query_vector=None, query_string=None, k=1):
                 }
             }
         }
+    elif query_type == "bm25_title_text":
+        logging.debug(f"Query string: {query_string}")
+        return {
+            "query": {
+                "multi_match": {
+                    "query": query_string,
+                    "fields": [
+                        "txt.english",
+                        "title.english"
+                    ],
+                    "type": "most_fields"
+                }
+            }
+        }
+
     else:
         logging.error(f"Invalid query type specified: {query_type}")
         raise ValueError("Invalid query type specified.")

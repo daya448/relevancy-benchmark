@@ -2,15 +2,17 @@
 es_host=https://ocbc-test.es.australia-southeast1.gcp.elastic-cloud.com:443
 es_port=9243
 api_token=NGgxREI1RUI1c0JodXp4WEt3cHY6bTZRcndzVTZRVVNKM0g1QnJsakVBdw==
-index_name=vdb910-msmarco-v2-relevance-temp
+#index_name=vdb910-msmarco-v2-relevance
+index_name=vdb910-trec-covid
 
 ##Generate Rank Eval Request
-ratings_file=qrels.tsv
-input_file=qrels.tsv
+query_file=trec_queries.json
+ratings_file=qrels_trec_covid.tsv
+#ratings_file=qrels.tsv
 ## Run Benchmarks
-query_types=base_query,vector_query,hybrid_query,hybrid_query_linear,bm25_english_full_text,bm25_full_text_plus_nostem
-# query_types=base_query,vector_query,hybrid_query
+#query_types=base_query,vector_query,hybrid_query,hybrid_query_linear,bm25_english_full_text,bm25_full_text_plus_nostem,bm25_title_text
+query_types=base_bm25,vector_query,hybrid_query,bm25_title_text
 # query_type=hybrid_query or elser_query or base_query or vector_query
 k=100
-relevant_rating_threshold=3
+relevant_rating_threshold=1
 benchmark_output_file=benchmark_output.csv

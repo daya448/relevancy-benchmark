@@ -12,7 +12,6 @@ logging.debug("Initializing Elasticsearch client and reading configuration.")
 es = get_elasticsearch_client()
 config = read_config('config.txt')
 
-k = int(config['k'])
 index_name = config['index_name']
 benchmark_output_file = config['benchmark_output_file']
 query_types = config.get('query_types', '').split(',')
@@ -25,18 +24,15 @@ with open('rank_eval_requests.json') as f:
 # Prepare to write results to CSV
 logging.info(f"Writing benchmark results to '{benchmark_output_file}'.")
 with open(benchmark_output_file, 'w', newline='') as csvfile:
-    fieldnames = ['query_id'] + query_types + ['rating_count'];
+    fieldnames = query_types
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
     # Prepare a dictionary to store recall scores
-    recall_scores = {}
+    metrics_scores = {}
 
     # Iterate over each request in the judgement list
-    i = 0
-    total_ratings = 0
     for request in judgement_list['requests']:
-        i = i + 1
         request_id = request['requests'][0]['id']
         logging.debug(f"Processing request_id: {request_id}")
 
@@ -48,8 +44,6 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
                 f"Skipping request with malformed ID: {request_id}")
             continue
         
-        rating_count = len(request['requests'][0]['ratings'])
-        total_ratings = total_ratings + rating_count
         # Define the rank evaluation request with the selected query template
 
         try:
@@ -59,17 +53,13 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
                 f"Rank evaluation response for request_id {request_id}: {response}")
 
             # Extract results
-            if response and 'details' in response:
-                detail = response['details'].get(request_id, {})
-                recall = detail.get('metric_score', 0)
-                recall_rounded = round(recall, 2)
+            if response and 'metric_score' in response:
+                score = response.get('metric_score', 0)
+                logging.info(f"Query type {query_type} returned score: {score}")
+                score_rounded = round(score, 4)
 
-                # Store the recall score in the recall_scores dictionary
-                if query_id not in recall_scores:
-                    recall_scores[query_id] = {
-                        'rating_count': rating_count
-                    }
-                recall_scores[query_id][query_type] = recall_rounded
+               # Store the recall score in the recall_scores dictionary
+                metrics_scores[query_type] = score_rounded
                 
             else:
                 logging.error(
@@ -80,22 +70,7 @@ with open(benchmark_output_file, 'w', newline='') as csvfile:
                 f"Error performing rank evaluation for request {request_id}: {e}")
 
     # Write the recall scores to the CSV file
-    row_i = 0
-    row_score_sum = {}
-    for qtype in query_types:
-        row_score_sum[qtype] = 0.0
-    for query_id, scores  in recall_scores.items():
-        row = {'query_id': query_id, 'rating_count': scores.get('rating_count', '')}
-        row_i = row_i + 1
-        for qtype in query_types:
-            row[qtype] = scores.get(qtype, '')
-            row_score_sum[qtype] = row_score_sum[qtype] + scores.get(qtype, 0)
-        writer.writerow(row)
-    avg_row = {}
-    for qtype in query_types:
-        avg_row[qtype] = row_score_sum[qtype] / row_i
-    writer.writerow(avg_row)
-    logging.info("Average number of ratings per request: " + str(total_ratings/i))
+    writer.writerow(metrics_scores)
 
 logging.info(
     f"All rank evaluation results saved to '{benchmark_output_file}'.")

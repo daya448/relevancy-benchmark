@@ -49,9 +49,10 @@ def read_config(filename):
 config = read_config('config.txt')
 query_types = config.get('query_types', '').split(',')
 rating_threshold = int(config.get('relevant_rating_threshold'))
+query_file = config.get('query_file', 'trec_queries.json')
 
 # Load the queries
-queries = load_json_objects('queries-recall.json')
+queries = load_json_objects(query_file)
 
 # Load the qrels from the qrels.tsv file
 qrels = {}
@@ -77,26 +78,27 @@ except FileNotFoundError as e:
 rank_eval_requests = {
     "requests": []
 }
-
+k = 10
 for query_type in query_types:
+    requests = []
     for query in queries:
         ratings = qrels.get(query["query_id"], [])
-        k = max(1, len(ratings)*2)
         request = {
             "id": f"{query['query_id']}-{query_type}",  # Include query type in the ID
-            "request": get_search_query(query_type, query_vector=query.get('emb'), query_string=query.get('text'), k=k),
+            "request": get_search_query(query_type, query_vector=query.get('emb'), query_string=query.get('text')),
             "ratings": ratings
         }
-        rank_eval_request = {
-            "requests": [request],
-            "metric": {
-                "recall": {
-                    "k": k,
-                    "relevant_rating_threshold": rating_threshold,
-                }
+        requests.append(request)
+    rank_eval_request = {
+        "requests": requests,
+        "metric": {
+            "dcg": {
+            "k": 10,
+            "normalize": True
             }
         }
-        rank_eval_requests["requests"].append(rank_eval_request)
+    }
+    rank_eval_requests["requests"].append(rank_eval_request)
 
 # Save the rank evaluation requests to a JSON file
 output_file = 'rank_eval_requests.json'
